@@ -1,0 +1,47 @@
+version: "3"
+
+services:
+  proxy:
+    image: traefik:2.10
+    command:
+      - --providers.docker
+      - --entryPoints.web.address=:80
+      - --providers.docker.exposedByDefault=false
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  frontend:
+    build: frontend
+    labels:
+      - "traefik.http.routers.frontend.rule=(Host(`${DOMAIN}`) && PathPrefix(`/`))"
+      - "traefik.http.routers.frontend.entryPoints=web"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+      - "traefik.enable=true"
+
+  backend:
+    build: backend
+    environment:
+      - MONGODB_URI=${MONGODB_URI}
+    labels:
+      - "traefik.http.middlewares.strip-backend-prefix.stripprefix.prefixes=/api"
+      - "traefik.http.routers.backend.rule=(Host(`${DOMAIN}`) && PathPrefix(`/api`))"
+      - "traefik.http.routers.backend.middlewares=strip-backend-prefix@docker"
+      - "traefik.http.routers.backend.entryPoints=web"
+      - "traefik.http.services.backend.loadbalancer.server.port=8080"
+      - "traefik.enable=true"
+
+  database:
+    image: mongo:7.0
+    restart: ${RESTART_POLICY}
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${ADMIN_DB_ROOT}
+      MONGO_INITDB_ROOT_PASSWORD: ${ADMIN_DB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: "intactsys"
+    volumes:
+      - ./database/data:/data/db
+      - ./database/init:/docker-entrypoint-initdb.d:ro
