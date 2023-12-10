@@ -16,20 +16,43 @@
     });
 
     function itemSelected() {
+        studyData.enhancedLetters =
+            document.getElementById("fruit").value.length;
         studyData.enhancedRequiredTime = new Date().getTime() - startTime;
         studyData.enhancedAttempts++;
-        correct = selected.id === optionsData.randomOption.id;
+        correct = selected === optionsData.randomOption.text;
     }
 </script>
 
-<p>'{optionsData.randomOption.text}'</p>
+<svelte:head>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/uswds/3.7.1/js/uswds-init.min.js"
+    ></script>
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/uswds/3.7.1/css/uswds.min.css"
+    />
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/uswds/3.7.1/js/uswds.min.js"
+    ></script>
+</svelte:head>
+
+<label class="usa-label" for="fruit">'{optionsData.randomOption.text}'</label>
 
 <div class="instrumentedUIElement">
-    <select bind:value={selected} on:change={itemSelected}>
-        {#each optionsData.options as option}
-            <option value={option}>{option.text}</option>
-        {/each}
-    </select>
+    <div class="usa-combo-box">
+        <select
+            class="usa-select"
+            name="fruit"
+            id="fruit"
+            bind:value={selected}
+            on:change={itemSelected}
+        >
+            {#each optionsData.options as option}
+                <option value={option.text}>{option.text}</option>
+            {/each}
+        </select>
+    </div>
 </div>
 
 <div class="continue">
