@@ -39,7 +39,7 @@ services:
       - "traefik.enable=true"
 
   database:
-    image: mongo:7.0
+    image: mongo:4.4
     restart: ${RESTART_POLICY}
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${ADMIN_DB_ROOT}
