@@ -5,6 +5,9 @@
     let dataStored = false;
     let userId = -1;
 
+    console.log("Study data:");
+    console.log(studyData);
+
     axios
         .post("./api/uploadData", studyData, {
             headers: {

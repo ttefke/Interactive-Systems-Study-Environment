@@ -11,27 +11,59 @@
     let correct = false;
     let optionsData = getRandomizedOptions();
 
+    let comboBoxStatus = 0;
+    let lastScroll = window.scrollY;
+    let scrollDistances = [];
+
     onMount(() => {
         startTime = new Date().getTime();
+
+        window.onscroll = function(e) {
+            let newScroll = window.scrollY - lastScroll;
+            console.log("User scrolled: " + newScroll);
+            scrollDistances.push({
+                distance: newScroll,
+                time: new Date().getTime()
+            });
+            lastScroll = newScroll;
+        }
     });
 
-    function itemSelected() {
+    function itemSelected(id) {
         studyData.defaultRequiredTime = new Date().getTime() - startTime;
         studyData.defaultAttempts++;
-        correct = selected.id === optionsData.randomOption.id;
+        correct = id === optionsData.randomOption.id;
+
+        if (correct) {
+            comboBoxStatus = 2;
+            studyData.defaultScrollDistance = JSON.stringify(scrollDistances);
+        }
+    }
+
+    function openComboBox() {
+        comboBoxStatus = 1;
     }
 </script>
 
+{#if comboBoxStatus < 2}
 <p>'{optionsData.randomOption.text}'</p>
+{:else}
+<p>Please tap on 'next' to continue.</p>
+{/if}
 
-<div class="instrumentedUIElement">
-    <select bind:value={selected} on:change={itemSelected}>
-        {#each optionsData.options as option}
-            <option value={option}>{option.text}</option>
-        {/each}
-    </select>
+
+{#if comboBoxStatus == 0}
+<button on:click={openComboBox}>
+    {optionsData.options[0].text}
+</button>
+{:else if comboBoxStatus == 1}
+<div class="combobox-bg">
+    {#each optionsData.options as {id, text}, i}
+        <button on:click={() => itemSelected(id)} class="combobox-button">{text}</button>
+        <br />
+    {/each}
 </div>
-
+{:else}
 <div class="continue">
     {#if correct}
         <button
@@ -41,3 +73,20 @@
         >
     {/if}
 </div>
+{/if}
+
+<style>
+    .combobox-button {
+        min-width: 20rem;
+        max-width: 20rem;
+
+        padding: 1rem;
+        margin: .3rem;
+    }
+
+    .combobox-bg {
+        background-color: #E0E0E0;
+        border-radius: 8px;
+        padding: 1rem;
+    }
+</style>

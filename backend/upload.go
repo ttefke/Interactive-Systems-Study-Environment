@@ -31,7 +31,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 	/* Generate a user ID */
 	count, err := collection.CountDocuments(context.TODO(), bson.D{})
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Cannot generate user ID", err)
 	}
 	data.UserId = count
 

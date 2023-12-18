@@ -5,6 +5,7 @@ export const currentComboBox = writable(0);
 export let studyData = {
     defaultRequiredTime: -1,
     defaultAttempts: 0,
+    defaultScrollDistance: "",
     enhancedLetters: 0,
     enhancedRequiredTime: -1,
     enhancedAttempts: 0
