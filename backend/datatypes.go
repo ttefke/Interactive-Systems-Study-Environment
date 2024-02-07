@@ -1,6 +1,10 @@
 package main
 
 /* Main data type used for holding data */
+type DownloadData struct {
+	Data []Data `json:"data"`
+}
+
 type Data struct {
 	UserId                int64  `json:"userId"`
 	DefaultRequiredTime   int64  `json:"defaultRequiredTime"`

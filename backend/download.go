@@ -26,18 +26,16 @@ func download(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	/* Print results using http response writer */
-	for i, result := range results {
-		cursor.Decode(&result)
-		output, err := json.MarshalIndent(result, "", "    ")
-		if err != nil {
-			log.Println(err)
-		}
+	/* Prepare data for download */
+	downloadData := DownloadData{
+		Data: results,
+	}
 
-		if i > 0 {
-			fmt.Fprintf(w, ",%s", output)
-		} else {
-			fmt.Fprintf(w, "%s", output)
-		}
+	/* Print data for download */
+	output, err := json.MarshalIndent(downloadData, "", "    ")
+	if err != nil {
+		log.Println(err)
+	} else {
+		fmt.Fprintf(w, "%s", output)
 	}
 }
